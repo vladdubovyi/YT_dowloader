@@ -5,18 +5,21 @@ import telebot
 
 bot = telebot.TeleBot(config.Token)
 
+	# Старт
 @bot.message_handler(commands=['start'])
 def welcome(message):
 	sti = open('src/welcome_sti.webp', 'rb')
 	bot.send_sticker(message.chat.id, sti)
 	bot.send_message(message.chat.id, 'Здраствуйте ' + str(message.from_user.first_name) + '!\nДля скачивания видоса напишите - /download\nДля получения помощи напишите - /help')
 
+	# Вывод помощи
 @bot.message_handler(commands=['help'])
 def help(message):
 	bot.send_message(message.chat.id,'\nДля скачивания видоса в формате mp4 напишите - /download <link>\nДля скачивания ТОЛЬКО аудио дорожки в формате mp3 напишите - /downloadmp3 <link>')
 
+	# Скачать в формате mp4
 @bot.message_handler(commands=['download'])
-def dowload(message):
+def downloadmp4(message):
 	msg = message.text.split()
 	if len(msg) != 2:
 		bot.send_message(message.chat.id,"Вы неправильно ввели команду, правильный ввод: /download <link>")
@@ -40,8 +43,9 @@ def dowload(message):
 		bot.send_document(message.chat.id, open(r'video.mp4', 'rb'))
 		os.remove("video.mp4")
 
+	# Скачать в формате mp3
 @bot.message_handler(commands=['downloadmp3'])
-def dowload(message):
+def downloadmp3(message):
 	msg = message.text.split()
 	if len(msg) != 2:
 		bot.send_message(message.chat.id,"Вы неправильно ввели команду, правильный ввод: /downloadmp3 <link>")
@@ -65,5 +69,10 @@ def dowload(message):
 
 		bot.send_document(message.chat.id, open(r'song.mp3', 'rb'))
 		os.remove("song.mp3")
+
+	# На необработанные случаи
+@bot.message_handler()
+async def er_mes(message: types.Message):
+	await message.answer("Я вас не понимаю!")
 
 bot.polling(none_stop=True)
